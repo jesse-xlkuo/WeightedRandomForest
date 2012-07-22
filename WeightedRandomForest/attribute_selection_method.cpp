@@ -6,6 +6,7 @@
  *       email: qinghan.meng@gmail.com
  */
 
+
 #include"attribute_selection_method.h"
 AttributeSelectionMethod::AttributeSelectionMethod(TrainingSet* training_set,vector<int> training_set_index, vector<int> attribute_list)
 {
