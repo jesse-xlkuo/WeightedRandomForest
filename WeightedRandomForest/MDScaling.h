@@ -1,14 +1,15 @@
 #ifndef MDSCALING_H
 #define MDSCALING_H
 #include<iostream>
-
+#include<complex>
+using namespace std;
 //class MDScaling
 //{
 //public:
 	double* getOutMatrix(double *B, int n, double eps, int jt);
-	void innerproduct(double *a, int n, double *b);//矩阵点乘
-	void brmul(double *a, double *b, int n, int m, int k, double *c);//矩阵相乘
-	int cjcbi(double *a, int n, double *v, double eps,int jt);//用Jocabi方法求实对称矩阵特征值与特征向量
+	void innerproduct(complex<double> *a, int n, complex<double> *b);
+	void brmul(complex<double> *a, complex<double> *b, int n, int m, int k, complex<double> *c);
+	int cjcbi(complex<double> *a, int n, complex<double> *v, complex<double> eps,int jt);
 	
 //public:
 //	int n;

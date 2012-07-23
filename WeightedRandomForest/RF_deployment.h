@@ -12,6 +12,7 @@
 #include"decision_tree.h"
 #include<cmath>
 #include<fstream>
+#include"MDScaling.h"
 using namespace std;
 
 struct confusion_matrix {
@@ -23,32 +24,20 @@ struct confusion_matrix {
 
 class RFDeployment {
 private:
-
 	RandomForests* RF_;
+	vector<DecisionTree*> random_forests_;
 	vector<confusion_matrix> c_matrix_;
 	vector<vector<int> > OOB_confusion_matrix_;
-	double OOB_error_rate_;
-	vector<DecisionTree*> random_forests_;
-	double RF_strength_;
-	double RF_correration_;
-	vector<double> trees_strength_;
-	vector<vector<int> > OOB_distribution_;
-	/*
-	 * OOB_p is two dimension array,Q(x,j)
-	 */
-	vector<vector<double> > OOB_proportion_;
+
 	vector<int> max_j_;
-	//vector<vector<int> > OOB_predict_result_;
 	double OneExpection;
-	/*
-	 * OOB_predicted has training_set_num * trees_num,each element store the predict result of a oob
-	 * classifer,if a tree does not a oob classifier, the value is -1; I think it is important when
-	 * we calculate the strength,correlation, oob error rate and so on.
-	 */
 	vector<vector<int> > OOB_predictor_;
 	vector<int> OOB_predictor_result_;
-
 	vector<vector<double> > cor_vec_; // correlation between each two trees
+	double OOB_error_rate_;
+	double RF_strength_;
+	double RF_correlation_;
+	vector<double> trees_strength_;
 
 
 public:
@@ -57,25 +46,25 @@ public:
 	int PredictClass(TrainingSet* training_set,int tuple);
 	double GetErrorRate(TrainingSet* training_set,vector<int> training_set_index);
 	void GenerateConfusionMatrix(TrainingSet* training_set,vector<int> training_set_index);
-	void GetEachTreeErrorRate(TrainingSet* training_set,vector<int> training_set_index);
 	vector<vector<double> > get_cor_vec_();
-	/*
-	 * Get the Random Forest strength by out of bag estimate.
-	 * the parameter training_set point to the origin training
-	 */
-	void CalculateOOBRFCS2(TrainingSet* training_set);
-	// the generalized error is estimated by strength and correlation
-	//double CalculateCorBetweenTwoTrees(int a, int b, TrainingSet* training_set);
 
 	vector<double> GetEachTreeStrength();
 	void CalculateOOBPredictor(TrainingSet* training_set);
 	void CalculateOOBPredictorResult(TrainingSet* training_set);
 	void CalculateTheOOBProportion(TrainingSet* training_set);
 	void CalculateOOBErrorRate(TrainingSet* training_set);
-	double CalculateRFStrength(TrainingSet* training_set);
-	double CalculateRFCorreration(TrainingSet* training_set);
+	double get_OOB_error_rate_();
+
+	void CalculateRFStrength(TrainingSet* training_set);
+	double get_RF_strength_();
+
+	void CalculateRFCorrelation(TrainingSet* training_set);
+	double get_RF_correlation();
+
 	void CalculateOOBConfusionMatrix(TrainingSet* training_set);
+	vector<vector<int> > get_OOB_confusion_matrix_();
 	void CalculateEachTreeOOBStrength(TrainingSet* training_set);
+
 	double CalculateTwoTreesCorrelation(int a, int b, TrainingSet* training_set);
 	void CalculateCorBetweenEachTwoTree(TrainingSet* training_set);
 	/*

@@ -1,8 +1,10 @@
-/************************************************************************************/
-/*      copyright 2011 HPDM SIAT Shenzhen China                                   **/
-/*      author:alex qinghan meng  email:phoenix.mqh@gmail.com                     **/
-/*      created in 12/28/2011                                                     **/
-/***********************************************************************************/
+/*
+ * utility.h
+ *
+ *  Created on: 28 Dec, 2011
+ *      Author: meng
+ *       email: qinghan.meng@gmail.com
+ */
 
 /*the declaration in the file is used as the utility of the project                */
 

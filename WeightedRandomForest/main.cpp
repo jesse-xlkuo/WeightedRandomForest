@@ -120,6 +120,12 @@ int main(int argc,char* argv[]){
 		RFDeployment RF_deployment(random_forests);
 
 		RF_deployment.CalculateOOBPredictor(training_set);
+
+		/*RF_deployment.CalculateOOBPredictorResult(training_set);
+		RF_deployment.CalculateOOBConfusionMatrix(training_set);
+		RF_deployment.CalculateOOBErrorRate(training_set);
+		cout <<"out of bag error rate:" << RF_deployment.get_OOB_error_rate_() << endl;*/
+
 		//RF_deployment.CalculateTwoTreesCorrelation(0,1,training_set);
 		/*
 		 * before we calculate the CalculateCorBetweenTwoTrees(),should first run CalculateOOBRFCS2() function
@@ -127,6 +133,15 @@ int main(int argc,char* argv[]){
 		//RF_deployment.CalculateOOBRFCS2(training_set);
 		//cout << RF_deployment.CalculateCorBetweenTwoTrees(0,0,training_set) << endl;
 		//cout << RF_deployment.CalculateTwoTreesCorrelation(0,0,training_set) << endl;
+
+		/*RF_deployment.CalculateRFStrength(training_set);
+		RF_deployment.CalculateRFCorrelation(training_set);
+		double s = RF_deployment.get_RF_strength_();
+		double c = RF_deployment.get_RF_correlation();
+		cout << "c:" << c << endl;
+		cout << "s:" << s << endl;
+		cout << "c/s2:" << c / (s*s) << endl;*/
+
 		RF_deployment.CalculateCorBetweenEachTwoTree(training_set);
 
 		vector<vector<double> > cor = RF_deployment.get_cor_vec_();
@@ -139,7 +154,12 @@ int main(int argc,char* argv[]){
 			}
 		}
 		o.close();
-		//vector<point> pos = RF_deployment.CalculateRelativePos();
+		vector<point> pos = RF_deployment.CalculateRelativePos();
+		cout << tree_num ;
+		for(i = 0; i < tree_num; ++ i){
+			//cout << "i:" << i << " " <<  pos.at(i).x_ << " " << pos.at(i).y_ << "\n";
+			cout << i ;
+		}
 
 	}
 
