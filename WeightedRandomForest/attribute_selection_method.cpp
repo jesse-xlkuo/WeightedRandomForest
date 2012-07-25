@@ -8,17 +8,25 @@
 
 
 #include"attribute_selection_method.h"
+
+TrainingSet* AttributeSelectionMethod::training_set_ = NULL;
+
 AttributeSelectionMethod::AttributeSelectionMethod(TrainingSet* training_set,vector<int> training_set_index, vector<int> attribute_list)
 {
-	    this->training_set_=training_set;
+	    AttributeSelectionMethod::training_set_=training_set;
+	    set_training_set_(training_set);
 		this->training_set_index_=training_set_index;
 		this->attribute_list_=attribute_list;
 		this->case_num_ = training_set_index.size();
 }
 
+void AttributeSelectionMethod::set_training_set_(TrainingSet* training_set){
+	AttributeSelectionMethod::training_set_ = training_set;
+}
+
 
 TrainingSet* AttributeSelectionMethod::get_training_set_(){
-	return this->training_set_;
+	return AttributeSelectionMethod::training_set_;
 }
 
 vector<int> AttributeSelectionMethod::get_training_set_index_(){

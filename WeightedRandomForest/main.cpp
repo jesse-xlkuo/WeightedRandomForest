@@ -18,6 +18,7 @@
 #include"decision_tree.h"
 #include"random_forests.h"
 #include"RF_deployment.h"
+#include"IGR.h"
 #include<fstream>
 /*
  * #include<unistd.h>
@@ -121,10 +122,10 @@ int main(int argc,char* argv[]){
 
 		RF_deployment.CalculateOOBPredictor(training_set);
 
-		/*RF_deployment.CalculateOOBPredictorResult(training_set);
+		RF_deployment.CalculateOOBPredictorResult(training_set);
 		RF_deployment.CalculateOOBConfusionMatrix(training_set);
 		RF_deployment.CalculateOOBErrorRate(training_set);
-		cout <<"out of bag error rate:" << RF_deployment.get_OOB_error_rate_() << endl;*/
+		cout <<"out of bag error rate:" << RF_deployment.get_OOB_error_rate_() << endl;
 
 		//RF_deployment.CalculateTwoTreesCorrelation(0,1,training_set);
 		/*
@@ -134,32 +135,32 @@ int main(int argc,char* argv[]){
 		//cout << RF_deployment.CalculateCorBetweenTwoTrees(0,0,training_set) << endl;
 		//cout << RF_deployment.CalculateTwoTreesCorrelation(0,0,training_set) << endl;
 
-		/*RF_deployment.CalculateRFStrength(training_set);
+		RF_deployment.CalculateRFStrength(training_set);
 		RF_deployment.CalculateRFCorrelation(training_set);
 		double s = RF_deployment.get_RF_strength_();
 		double c = RF_deployment.get_RF_correlation();
 		cout << "c:" << c << endl;
 		cout << "s:" << s << endl;
-		cout << "c/s2:" << c / (s*s) << endl;*/
+		cout << "c/s2:" << c / (s*s) << endl;
 
-		RF_deployment.CalculateCorBetweenEachTwoTree(training_set);
-
-		vector<vector<double> > cor = RF_deployment.get_cor_vec_();
-		ofstream o("correlation");
-		int i;
-		for(i = 0; i < tree_num; ++ i){
-			int j;
-			for(j = 0; j < tree_num; ++ j){
-				o << cor.at(i).at(j) << "\n";
-			}
-		}
-		o.close();
-		vector<point> pos = RF_deployment.CalculateRelativePos();
-		cout << tree_num ;
-		for(i = 0; i < tree_num; ++ i){
-			//cout << "i:" << i << " " <<  pos.at(i).x_ << " " << pos.at(i).y_ << "\n";
-			cout << i ;
-		}
+//		RF_deployment.CalculateCorBetweenEachTwoTree(training_set);
+//
+//		vector<vector<double> > cor = RF_deployment.get_cor_vec_();
+//		ofstream o("correlation");
+//		int i;
+//		for(i = 0; i < tree_num; ++ i){
+//			int j;
+//			for(j = 0; j < tree_num; ++ j){
+//				o << cor.at(i).at(j) << "\n";
+//			}
+//		}
+//		o.close();
+//		vector<point> pos = RF_deployment.CalculateRelativePos();
+//		cout << "point num:" << pos.size() << endl;
+//		for(i = 0; i < tree_num; ++ i){
+//			cout << "i:" << i << " " <<  pos.at(i).x_ << " " << pos.at(i).y_ << "\n";
+//
+//		}
 
 	}
 
@@ -167,6 +168,19 @@ int main(int argc,char* argv[]){
 	cout << "the program execution time is " << ((finish - start) / CLOCKS_PER_SEC ) / 60.0 << " minutes" << endl;
 	return 0;
 }
+
+
+//int main(){
+//	vector<double> vec;
+//	int i;
+//	for (i = 0; i < 10000; i ++){
+//		vec.push_back((double)i / 10000.0);
+//	}
+//	IGR igr;
+//	igr.CalculateWeight(vec);
+//	cout << "selected:" << igr.GetSelectedResult() << endl;;
+//
+//}
 
 void about(){
 	cout    << "\nWeightedRandomForestsV1.0.\n"
@@ -182,6 +196,42 @@ void help(){
 	    << endl;
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

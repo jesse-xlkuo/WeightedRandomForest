@@ -18,6 +18,7 @@
 #include<cstdio>
 class C4_5AttributeSelectionMethod:public AttributeSelectionMethod{
 private:
+	static int current_attribute_;
     static int seed_num_;
 	bool status_;
 	const static int training_set_minimum_=2;
@@ -56,16 +57,22 @@ public:
 
 	double CalculateContinuousAttributeInfoGain(int attribute);
 	bool HandleContinuousAttribute(int attribute);
+	void SortTrainingSetByContinuousAttribute(vector<IndexValue>& index_value_sort);
+	static bool CompStatic(int a, int b);
+	void SortTrainingSet(vector<int>& training_set_index);
 	double CalculateInfoByClassNum(vector<int>& class_num,int all_num);
 
 	double CalculateDiscreteAttributeInfoGain(int attribute);
 	bool HandleDiscreteAttribute(int attribute);
 
-	void ExecuteSelection();
+	void ExecuteSelection();  // Breiman's classic method
+	void ExecuteSelectionByIGR(); // IGR weight method
 
-	void SortTrainingSetByContinuousAttribute(vector<IndexValue>& index_value_sort);
+
 	vector<int> GetRandomSubSpace(vector<int> attribute_list);
 	void TestGetRandomSubSpace();
+
+
 
 
 };

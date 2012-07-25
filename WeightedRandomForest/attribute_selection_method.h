@@ -16,8 +16,8 @@
 using namespace std;
 
 class AttributeSelectionMethod {
-private:
-	TrainingSet* training_set_;
+protected:
+	static TrainingSet* training_set_;
 	vector<int> training_set_index_;
 	vector<int> attribute_list_;
 	int attribute_;
@@ -27,7 +27,8 @@ private:
 	double attribute_info_gain_;  // added for result data file
 public:
 	AttributeSelectionMethod(TrainingSet*,vector<int>,vector<int>);
-	TrainingSet* get_training_set_();
+	static void set_training_set_(TrainingSet* training_set);
+	static TrainingSet* get_training_set_();
 	vector<int> get_training_set_index_();
 	vector<int> get_attribute_list_();
 	void set_attribute_(int);

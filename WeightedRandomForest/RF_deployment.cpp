@@ -136,7 +136,7 @@ vector<point> RFDeployment::CalculateRelativePos(){
 	for(iter1 = this->cor_vec_.begin(); iter1 != this->cor_vec_.end(); ++ iter1){
 		vector<double>::iterator iter2;
 		for(iter2 = iter1->begin(); iter2 != iter1->end(); ++ iter2){
-			*(cor+i) = *(iter2);
+			*(cor+i) = (*(iter2));
 			i ++;
 		}
 	}
@@ -368,7 +368,9 @@ void RFDeployment::CalculateCorBetweenEachTwoTree(TrainingSet* training_set){
 	int a, b;
 	for(a = 0; a < trees_num; a ++){
 		for(b = 0; b < trees_num; b ++){
-			cor_vec.at(a).at(b) = this->CalculateTwoTreesCorrelation(a,b,training_set);
+			if(a != b){
+				   cor_vec.at(a).at(b) = this->CalculateTwoTreesCorrelation(a,b,training_set);
+			}
 		}
 	}
 	this->cor_vec_ = cor_vec;
@@ -413,6 +415,7 @@ void RFDeployment::CalculateOOBConfusionMatrix(TrainingSet* training_set){
 vector<vector<int> > RFDeployment::get_OOB_confusion_matrix_(){
 	return this->OOB_confusion_matrix_;
 }
+
 /*
  * we can get the OOB error rate from the OOB confusion matrix.
  * so you should get the OOB confusion matrix first,just run GalculateConfusionMatrix()
