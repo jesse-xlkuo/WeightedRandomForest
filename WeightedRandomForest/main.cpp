@@ -22,7 +22,7 @@
 #include<fstream>
 /*
  * #include<unistd.h>
- * include the getopt function,you can fund the getopt function information in
+ * include the getopt function,you can find the getopt function information in
  * http://www.gnu.org/savannah-checkouts/gnu/libc/manual/html_node/Using-Getopt.html#Using-Getopt
  */
 #include<unistd.h>
@@ -86,7 +86,7 @@ int main(int argc,char* argv[]){
 	RandomForests* random_forests = new RandomForests(training_set,tree_num);
 	random_forests->GenerateRF();
 
-	cout << "random forests has generated successfully!\n" << endl;
+	cout << "random forests has generated successfully!" << endl;
 
 	if(model_test){
 		TrainingSet* test_set = new TrainingSet();
@@ -105,7 +105,7 @@ int main(int argc,char* argv[]){
 		//RF_deployment.CalculateOOBRFCS2(training_set);
 		//RF_deployment.CalculateCortweenEachTwoTree(training_set);
 		/*
-		 * test:get each tree strength
+		 * test:get each tree strengthTrainingSet
 		 */
 		//RF_deployment.CalculateOOBRFCS2(training_set);
 		//vector<double> trees_strength = RF_deployment.GetEachTreeStrength();
@@ -118,6 +118,7 @@ int main(int argc,char* argv[]){
 	}
 
 	if(OOB_estimate){
+
 		RFDeployment RF_deployment(random_forests);
 
 		RF_deployment.CalculateOOBPredictor(training_set);
@@ -169,6 +170,28 @@ int main(int argc,char* argv[]){
 	return 0;
 }
 
+//int main(){
+//	string stream_name = "/home/meng/workspace/DataSet/fbis";
+//	string name_file = stream_name + ".names";
+//	string data_file = stream_name + ".data";
+//	AttributeValueMapper * attribute_value_mapper = new AttributeValueMapper(name_file);
+//	if ( attribute_value_mapper->MapAttributeValue() == FAIL ){
+//			cout << "Can not read the names file !" << endl;
+//			return 2;
+//	}
+//	TrainingSet*  training_set = new TrainingSet();
+//	training_set->set_source_name_(stream_name);
+//	training_set->set_attribute_value_mapper(*attribute_value_mapper);
+//	training_set->ProduceTrainingSetMatrix(data_file);
+//	DecisionTree decision_tree;
+//	vector<int> training_set_index;
+//	int training_set_num = training_set->get_training_set_num_();
+//	int i;
+//	for(i = 0; i < training_set_num; ++ i){
+//		training_set_index.push_back(i);
+//	}
+//	decision_tree.GenerateDecisionTreeByC4_5(training_set, training_set_index ,training_set->GetNormalAttributes());
+//}
 
 //int main(){
 //	vector<double> vec;

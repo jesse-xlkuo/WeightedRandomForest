@@ -433,6 +433,7 @@ void C4_5AttributeSelectionMethod::ExecuteSelection() {
 	/*
 	 * use the all features
 	 */
+
 	vector<int> attribute_list = this->get_attribute_list_();
 
 	TrainingSet* training_set = this->get_training_set_();
@@ -466,28 +467,61 @@ void C4_5AttributeSelectionMethod::ExecuteSelection() {
 	int attribute;
 	bool is_set_attribute = false;
 	double split_info; //just for test
+
+	/*
+	 * following commented codes is to select the max gain ratio
+	 */
+//	for (iter_info_gain = this->info_gain_.begin(); iter_info_gain != this->info_gain_.end(); ++iter_info_gain) {
+//		/*the average_info_gain minus 0.001 to avoid the situation
+//		 where all the info gain is the same */
+//		if (iter_info_gain->second >= average_info_gain - 0.001) {
+//			if (this->get_split_info_(iter_info_gain->first) > 0) {
+//				split_info = get_split_info_(iter_info_gain->first); //just for test
+//				temp_gain_ratio = this->get_info_gain_(iter_info_gain->first) / this->get_split_info_(iter_info_gain->first);
+//				if (is_set_gain_ratio) {
+//					if (temp_gain_ratio > gain_ratio) {
+//						gain_ratio = temp_gain_ratio;
+//						attribute = iter_info_gain->first;
+//						is_set_attribute = true;
+//					}
+//				} else {
+//					gain_ratio = temp_gain_ratio;
+//					attribute = iter_info_gain->first;
+//					is_set_gain_ratio = true;
+//					is_set_attribute = true;
+//				}
+//			}
+//		}
+//	}
+/*
+ * following code is IGR weighting method
+ */
+	vector<int> alternative_attributes;
+	vector<double> alternative_gain_ratio;
 	for (iter_info_gain = this->info_gain_.begin(); iter_info_gain != this->info_gain_.end(); ++iter_info_gain) {
-		/*the average_info_gain minus 0.001 to avoid the situation 
-		 where all the info gain is the same */
+			/*the average_info_gain minus 0.001 to avoid the situation
+			 where all the info gain is the same */
 		if (iter_info_gain->second >= average_info_gain - 0.001) {
 			if (this->get_split_info_(iter_info_gain->first) > 0) {
-				split_info = get_split_info_(iter_info_gain->first); //just for test
 				temp_gain_ratio = this->get_info_gain_(iter_info_gain->first) / this->get_split_info_(iter_info_gain->first);
-				if (is_set_gain_ratio) {
-					if (temp_gain_ratio > gain_ratio) {
-						gain_ratio = temp_gain_ratio;
-						attribute = iter_info_gain->first;
-						is_set_attribute = true;
-					}
-				} else {
-					gain_ratio = temp_gain_ratio;
-					attribute = iter_info_gain->first;
-					is_set_gain_ratio = true;
-					is_set_attribute = true;
-				}
+				alternative_attributes.push_back(iter_info_gain->first);
+				alternative_gain_ratio.push_back(temp_gain_ratio);
+				is_set_attribute = true;
 			}
 		}
 	}
+
+	if(alternative_attributes.size() == 0){
+		cout << "alternative_attributes vector is empty" << endl;
+		exit(1);
+	}
+
+	IGR igr;
+	igr.CalculateWeight(alternative_gain_ratio);
+	attribute = alternative_attributes.at(igr.GetSelectedResult());
+
+
+
 	if (!is_set_attribute) {
 		attribute = this->info_gain_.begin()->first;
 	}

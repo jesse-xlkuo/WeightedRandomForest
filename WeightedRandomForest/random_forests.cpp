@@ -43,6 +43,7 @@ void RandomForests::GenerateRF(){
 		this->random_forests_.push_back(decision_tree);
 		i ++ ;
 		cout << i << " trees have generated" << endl;
+
 		/*
 		 * wo should show how much calculation has completed,that is to say,the progress
 		 */

@@ -47,7 +47,6 @@ int IGR::GetSelectedResult(){
 	for(i = 0; i < this->m_; i ++){
 
 		rand_num = dist(gen);
-		cout << "random num:" << rand_num  << " " << this->weights_[rand_num]<< endl;
 
 		if(is_max_set){
 			if(this->weights_[rand_num] > this->weights_[max]){

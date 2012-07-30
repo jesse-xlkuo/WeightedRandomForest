@@ -16,6 +16,7 @@
 #include<cstdlib>
 #include<cmath>
 #include<cstdio>
+#include"IGR.h"
 class C4_5AttributeSelectionMethod:public AttributeSelectionMethod{
 private:
 	static int current_attribute_;
