@@ -18,6 +18,10 @@
 
 int RandomForests::seed_num_ = 1000;
 
+RandomForests::RandomForests(){
+
+}
+
 RandomForests::RandomForests(TrainingSet* training_set,int trees_num){
 	this->training_set_=training_set;
 	this->trees_num_=trees_num;
@@ -30,58 +34,48 @@ vector<DecisionTree*> RandomForests::get_trees(){
 void RandomForests::GenerateRF(){
 	vector<vector<int> > training_sets=this->GetRandomTrainingSet();
 	double i = 0;
-	double progress;
 	vector<vector<int> >::iterator iter;
 	for(iter=training_sets.begin();iter!=training_sets.end();++iter){
-		DecisionTree* decision_tree=new DecisionTree();
-		Node* root=decision_tree->GenerateDecisionTreeByC4_5(this->training_set_,*iter,this->training_set_->GetNormalAttributes());
+		DecisionTree* decision_tree=new DecisionTree(this->training_set_);
+		Node* root=decision_tree->GenerateDecisionTreeByC4_5(*iter,this->training_set_->GetNormalAttributes());
 		//Node* root=decision_tree->GenerateDecisionTreeByC4_5(this->training_set_,training_set_index,this->training_set_->GetNormalAttributes());
-
 		decision_tree->set_root_(root);
 		this->node_num_.push_back(Node::node_num_);
 		Node::node_num_ = 0;
 		this->random_forests_.push_back(decision_tree);
 		i ++ ;
 		cout << i << " trees have generated" << endl;
-
-		/*
-		 * wo should show how much calculation has completed,that is to say,the progress
-		 */
-		//cout << right;
-		//progress = (i / this->trees_num_) * 100;
-		//cout << "\b\b\b\b\b" << setw(4) << setprecision(3) << progress << "%" << endl;
-
 	}
 
 }
 
-void RandomForests::PrintTrees(){
-	vector<DecisionTree*>::iterator iter;
-	int i = 1;
-	for(iter = this->random_forests_.begin(); iter != this->random_forests_.end(); ++ iter){
-		string name;
-		stringstream ss;
-		ss << i;
-		ss >> name;
-		//name += "-";
-		//name += this->training_set_->get_source_name_();
-		//cout << "name = " << name << endl;
-		ofstream f(name.c_str());
-		f << "DecisionTree {\n\t"
-				<< "Name = \"" << this->training_set_->get_source_name_() << "\"\n\t"
-				<< "TrainingData = \"" << this->training_set_->get_training_set_num_() << "\"\n\t"
-				<< "NumberOfAttributes = \"" << this->training_set_->GetAttributeNum() << "\"\n\t"
-				<< "Classes = \"" << this->training_set_->GetAllClassName() << "\"\n\t"
-				<< "Precision = \"0.8,0.8" << "\"\n\t"
-				<< "SingleTreeStrength = \"0.8" << "\"\n\t"
-				<< "NumberNode = \"" << this->node_num_.at(i-1) << "\"\n"
-				<< "}\n";
-
-		Node* root = (*iter)->get_root_();
-		(*iter)->TraverseTree(f,this->training_set_,root);
-		i ++;
-	}
-}
+//void RandomForests::PrintTrees(){
+//	vector<DecisionTree*>::iterator iter;
+//	int i = 1;
+//	for(iter = this->random_forests_.begin(); iter != this->random_forests_.end(); ++ iter){
+//		string name;
+//		stringstream ss;
+//		ss << i;
+//		ss >> name;
+//		//name += "-";
+//		//name += this->training_set_->get_source_name_();
+//		//cout << "name = " << name << endl;
+//		ofstream f(name.c_str());
+//		f << "DecisionTree {\n\t"
+//				<< "Name = \"" << this->training_set_->get_source_name_() << "\"\n\t"
+//				<< "TrainingData = \"" << this->training_set_->get_training_set_num_() << "\"\n\t"
+//				<< "NumberOfAttributes = \"" << this->training_set_->GetAttributeNum() << "\"\n\t"
+//				<< "Classes = \"" << this->training_set_->GetAllClassName() << "\"\n\t"
+//				<< "Precision = \"0.8,0.8" << "\"\n\t"
+//				<< "SingleTreeStrength = \"0.8" << "\"\n\t"
+//				<< "NumberNode = \"" << this->node_num_.at(i-1) << "\"\n"
+//				<< "}\n";
+//
+//		Node* root = (*iter)->get_root_();
+//		(*iter)->TraverseTree(f,this->training_set_,root);
+//		i ++;
+//	}
+//}
 
 //int RandomForests::PredictClass(TrainingSet* training_set,int tuple){
 //
@@ -118,25 +112,11 @@ vector<vector<int> > RandomForests::GetRandomTrainingSet(){
 	return all_vec;
 }
 
-void RandomForests::TestGetRandomTrainingSet(){
-	vector<vector<int> > all_vec=this->GetRandomTrainingSet();
-	vector<vector<int> >::iterator iter1;
-	for(iter1=all_vec.begin();iter1!=all_vec.end();++iter1){
-		cout<<"------------------------------------------------------------"<<endl;
-		vector<int>::iterator iter2;
-		for(iter2=(*iter1).begin();iter2!=(*iter1).end();++iter2){
-			cout<<*iter2<<" ";
-		}
-		cout<<endl;
-	}
-
-}
-
 int RandomForests::PredictClass(TrainingSet* training_set,int tuple){
 	map<int,int> mapper;
 	vector<DecisionTree*>::iterator iter;
 	for(iter=this->random_forests_.begin();iter!=this->random_forests_.end();++iter){
-		int target_class=((LeafNode*)((*iter)->PredictClass(training_set,tuple,(*iter)->get_root_())))->get_class_();
+		int target_class=((*iter)->PredictClass(training_set,tuple,(*iter)->get_root_()))->get_class_();
 		if(mapper.find(target_class)==mapper.end()){
 			mapper.insert(map<int,int>::value_type(target_class,1));
 		}else{
@@ -217,4 +197,46 @@ vector<int> RandomForests::GetRandomSubSpace(vector<int> attribute_list) {
 	C4_5AttributeSelectionMethod::inc_seed_();
 	return result;
 
+}
+
+void RandomForests::set_OOB_error_rate_(double rate){
+	this->OOB_error_rate_ = rate;
+}
+double RandomForests::get_OOB_error_rate_(){
+	return this->OOB_error_rate_;
+}
+void RandomForests::set_strength_(double strength){
+	this->strength_ = strength;
+}
+double RandomForests::get_strength(){
+	return this->strength_;
+}
+void RandomForests::set_correlation_(double correlation){
+	this->correlation_ = correlation;
+}
+double RandomForests::get_correlation_(){
+	return this->correlation_;
+}
+void RandomForests::set_c_s2_(double c_s2){
+	this->c_s2_ = c_s2;
+}
+double RandomForests::get_c_s2_(){
+	return this->c_s2_;
+}
+
+void RandomForests::PredictClassToFile(TrainingSet* training_set,
+		               AttributeValueMapper* attribute_value_mapper,
+		               string file_name){
+	ofstream out(file_name.c_str());
+	int case_num = training_set->get_training_set_num_();
+	int target_attribute = attribute_value_mapper->GetClassifyAttribute();
+	int i;
+	int lable;
+	string result;
+	for(i = 0; i < case_num; ++ i){
+		lable = this->PredictClass(training_set,i);
+		result = attribute_value_mapper->GetAttributeValueName(target_attribute,lable);
+		out << result << "\n";
+	}
+	out.close();
 }

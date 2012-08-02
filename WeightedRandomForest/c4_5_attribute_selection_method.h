@@ -22,11 +22,12 @@ private:
 	static int current_attribute_;
     static int seed_num_;
 	bool status_;
-	const static int training_set_minimum_=2;
+	const static int training_set_minimum_ = 2;
 	map<int,double> info_gain_;
 	map<int,double> split_info_;
 	map<int,map<int,vector<int> > >splited_training_set_;
 	map<int,double> split_value_;
+	double info1_;
 
 public:
 
@@ -54,7 +55,7 @@ public:
 
 
 
-	double CalculateInfo(vector<int> training_set_index);
+	double CalculateInfo(vector<int>& training_set_index);
 
 	double CalculateContinuousAttributeInfoGain(int attribute);
 	bool HandleContinuousAttribute(int attribute);

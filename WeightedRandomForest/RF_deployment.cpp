@@ -31,8 +31,7 @@ int RFDeployment::PredictClass(TrainingSet* training_set, int tuple) {
 	vector<DecisionTree*>::iterator iter;
 	for (iter = this->random_forests_.begin();
 			iter != this->random_forests_.end(); ++iter) {
-		int target_class = ((LeafNode*) ((*iter)->PredictClass(training_set,
-				tuple, (*iter)->get_root_())))->get_class_();
+		int target_class = ((*iter)->PredictClass(training_set, tuple, (*iter)->get_root_()))->get_class_();
 		if (mapper.find(target_class) == mapper.end()) {
 			mapper.insert(map<int, int>::value_type(target_class, 1));
 		} else {
@@ -163,7 +162,7 @@ vector<point> RFDeployment::CalculateRelativePos(){
 
 void RFDeployment::CalculateOOBPredictor(TrainingSet* training_set){
 	int training_set_num = training_set->get_training_set_num_();
-	int target_attribute = training_set->GetClassifyAttribute();
+//	int target_attribute = training_set->GetClassifyAttribute();
 	int trees_num = this->RF_->get_trees_num();
 	vector<vector<bool> > selected_status = this->RF_->get_selected_status_();
 
@@ -173,8 +172,7 @@ void RFDeployment::CalculateOOBPredictor(TrainingSet* training_set){
 		int j;
 		for (j = 0; j < trees_num; ++j) {
 			if (selected_status.at(j).at(i) == false) {
-			    int predicted_class =((LeafNode*) this->random_forests_.at(j)->PredictClass(
-								    training_set, i, this->random_forests_.at(j)->get_root_()))->get_class_();
+			    int predicted_class =(this->random_forests_.at(j)->PredictClass(training_set, i, this->random_forests_.at(j)->get_root_()))->get_class_();
 				temp_vec.at(j) = predicted_class;
 			}
 
@@ -525,8 +523,7 @@ void RFDeployment::CalculateRFCorrelation(TrainingSet* training_set){
 				OOB_instance ++;
 				int actual_class = value_matrix[target_attribute][j].discrete_value_;
 				int max_j = this->max_j_.at(j);
-				int predict_class = ((LeafNode*)this->random_forests_.at(i)->PredictClass(training_set,j,
-																	this->random_forests_.at(i)->get_root_()))->get_class_();
+				int predict_class = (this->random_forests_.at(i)->PredictClass(training_set,j,this->random_forests_.at(i)->get_root_()))->get_class_();
 				if(predict_class == actual_class){
 					i1 ++;
 				}else if(predict_class == max_j){

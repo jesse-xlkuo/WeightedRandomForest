@@ -74,7 +74,7 @@ map<int, double> TrainingSet::GetClassDistribution(
 	return result;
 }
 
-int TrainingSet::GetTheMostClass(vector<int> training_set_index) {
+int TrainingSet::GetTheMostClass(vector<int>& training_set_index) {
 	int classify_attribute = this->GetClassifyAttribute();
 	int training_set_num = training_set_index.size();
 	map<int, int> mapper;
@@ -82,8 +82,7 @@ int TrainingSet::GetTheMostClass(vector<int> training_set_index) {
 	int class_index;
 	for (i = 0; i < training_set_num; i++) {
 		//class_index=this->training_set_.at(training_set_index.at(i)).GetClass(classify_attribute);
-		class_index =
-				this->value_matrix_[classify_attribute][training_set_index.at(i)].discrete_value_;
+		class_index = this->value_matrix_[classify_attribute][training_set_index.at(i)].discrete_value_;
 		if (mapper.find(class_index) == mapper.end()) {
 			mapper.insert(map<int, int>::value_type(class_index, 1));
 		} else {
@@ -102,7 +101,7 @@ int TrainingSet::GetTheMostClass(vector<int> training_set_index) {
 	return result;
 }
 
-bool TrainingSet::IsTrainingSetSameClass(vector<int> training_set_index) {
+bool TrainingSet::IsTrainingSetSameClass(vector<int>& training_set_index) {
 	int training_set_num = training_set_index.size();
 	if (training_set_num == 0) {
 		cout << "error in training_set.cpp function: IsTrainingSetSameClass"
@@ -114,13 +113,10 @@ bool TrainingSet::IsTrainingSetSameClass(vector<int> training_set_index) {
 		int target_attribute = this->GetClassifyAttribute();
 		int i = 0;
 		//int class_one=this->training_set_.at(training_set_index.at(i)).GetClass(this->GetClassifyAttribute());
-		int class_one =
-				this->value_matrix_[target_attribute][training_set_index.at(i)].discrete_value_;
+		int class_one = this->value_matrix_[target_attribute][training_set_index.at(i)].discrete_value_;
 		i++;
 		while (i < training_set_num) {
-			if (class_one
-					!= this->value_matrix_[target_attribute][training_set_index.at(
-							i)].discrete_value_) {
+			if (class_one != this->value_matrix_[target_attribute][training_set_index.at(i)].discrete_value_) {
 				return false;
 			}
 			i++;
@@ -132,8 +128,7 @@ bool TrainingSet::IsTrainingSetSameClass(vector<int> training_set_index) {
 
 
 
-map<int, vector<int> > TrainingSet::SplitByDiscreteAttribute(
-		vector<int> training_set_index, int attribute) {
+map<int, vector<int> > TrainingSet::SplitByDiscreteAttribute(vector<int> training_set_index, int attribute) {
 	vector<int> temp_vec;
 	map<int, vector<int> > result;
 	int i;
@@ -142,16 +137,14 @@ map<int, vector<int> > TrainingSet::SplitByDiscreteAttribute(
 	}
 	int training_set_num = training_set_index.size();
 	for (i = 0; i < training_set_num; ++i) {
-		int attribute_value =
-				this->value_matrix_[attribute][training_set_index.at(i)].discrete_value_;
+		int attribute_value = this->value_matrix_[attribute][training_set_index.at(i)].discrete_value_;
 		result[attribute_value].push_back(training_set_index.at(i));
 	}
 	return result;
 
 }
 
-map<int, vector<int> > TrainingSet::SplitByPositon(
-		vector<int> training_set_index, int pos) {
+map<int, vector<int> > TrainingSet::SplitByPositon(vector<int>& training_set_index, int pos) {
 	int training_set_num = training_set_index.size();
 	map<int, vector<int> > mapper;
 	if (pos < 0 || pos >= training_set_num) {
@@ -173,8 +166,7 @@ map<int, vector<int> > TrainingSet::SplitByPositon(
 	return mapper;
 }
 
-void TrainingSet::DeleteOneAttribute(vector<int>& attribute_list,
-		int attribute) {
+void TrainingSet::DeleteOneAttribute(vector<int>& attribute_list, int attribute) {
 	vector<int>::iterator iter;
 	for (iter = attribute_list.begin(); iter != attribute_list.end(); ++iter) {
 		if ((*iter) == attribute) {
@@ -193,7 +185,7 @@ string TrainingSet::GetAttributeValueName(int attribute, int index) {
 	return this->attribute_value_mapper_.GetAttributeValueName(attribute, index);
 }
 
-vector<int> TrainingSet::GetClassesNum(vector<int> training_set_index) {
+vector<int> TrainingSet::GetClassesNum(vector<int>& training_set_index) {
 	int classify_attribute = this->GetClassifyAttribute();
 	int training_set_num = training_set_index.size();
 	int class_num = this->GetAttributeValueNum(classify_attribute);
@@ -204,10 +196,10 @@ vector<int> TrainingSet::GetClassesNum(vector<int> training_set_index) {
 	}
 	int class_index;
 	for (i = 0; i < training_set_num; i++) {
-		class_index =
-				this->value_matrix_[classify_attribute][training_set_index.at(i)].discrete_value_;
-		mapper.at(class_index)++;}
-return mapper	;
+		class_index = this->value_matrix_[classify_attribute][training_set_index.at(i)].discrete_value_;
+		mapper.at(class_index)++;
+	}
+    return mapper;
 }
 
 void TrainingSet::TestMatrix() {

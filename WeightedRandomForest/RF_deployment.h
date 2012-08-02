@@ -13,6 +13,15 @@
 #include<cmath>
 #include<fstream>
 #include"MDScaling.h"
+/*
+ * following included file is from boost library and is for serialization
+ */
+#include <boost/serialization/utility.hpp>
+#include <boost/serialization/base_object.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/archive/tmpdir.hpp>
 using namespace std;
 
 struct confusion_matrix {
@@ -38,6 +47,9 @@ private:
 	double RF_strength_;
 	double RF_correlation_;
 	vector<double> trees_strength_;
+
+
+
 
 
 public:

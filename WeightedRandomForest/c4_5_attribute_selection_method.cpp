@@ -14,7 +14,7 @@ C4_5AttributeSelectionMethod::C4_5AttributeSelectionMethod(
 		vector<int> attribute_list) :
 		AttributeSelectionMethod(training_set, training_set_index,
 				attribute_list) {
-
+	this->info1_ = this->CalculateInfo(training_set_index);
 }
 
 int C4_5AttributeSelectionMethod::seed_num_ = 1000;
@@ -46,11 +46,8 @@ double C4_5AttributeSelectionMethod::get_split_info_(int attribute) {
 	return this->split_info_[attribute];
 }
 
-void C4_5AttributeSelectionMethod::set_splited_training_set(int attribute,
-		map<int, vector<int> > splited_training_set_index) {
-	this->splited_training_set_.insert(
-			map<int, map<int, vector<int> > >::value_type(attribute,
-					splited_training_set_index));
+void C4_5AttributeSelectionMethod::set_splited_training_set(int attribute, map<int, vector<int> > splited_training_set_index) {
+	this->splited_training_set_.insert(map<int, map<int, vector<int> > >::value_type(attribute, splited_training_set_index));
 }
 
 map<int, vector<int> > C4_5AttributeSelectionMethod::get_splited_training_set_(
@@ -68,51 +65,21 @@ double C4_5AttributeSelectionMethod::get_split_value(int attribute) {
 	return this->split_value_[attribute];
 }
 
-double C4_5AttributeSelectionMethod::CalculateInfo(
-		vector<int> training_set_index) {
+double C4_5AttributeSelectionMethod::CalculateInfo(vector<int>& training_set_index) {
 	double info = 0;
 	double base = 2;
-	vector<int> class_distribution = this->get_training_set_()->GetClassesNum(
-			training_set_index);
-	return this->CalculateInfoByClassNum(class_distribution,
-			training_set_index.size());
+	vector<int> class_distribution = this->get_training_set_()->GetClassesNum(training_set_index);
+	return this->CalculateInfoByClassNum(class_distribution,training_set_index.size());
 }
 
-double C4_5AttributeSelectionMethod::CalculateDiscreteAttributeInfoGain(
-		int attribute) {
-	double info1 = CalculateInfo(this->get_training_set_index_());
-	double info2 = 0;
-	int training_set_num = this->get_training_set_index_().size();
-	map<int, vector<int> > mapper =
-			this->get_training_set_()->SplitByDiscreteAttribute(
-					this->get_training_set_index_(), attribute);
-	this->splited_training_set_.insert(
-			map<int, map<int, vector<int> > >::value_type(attribute, mapper));
-	double temp_ratio;
-	double split_info = 0;
-	for (map<int, vector<int> >::iterator iter = mapper.begin();
-			iter != mapper.end(); ++iter) {
-		if (iter->second.size() != 0) {
-			temp_ratio = (double) iter->second.size()
-					/ (double) training_set_num;
-			split_info += (-(temp_ratio) * (log(temp_ratio) / log(2.0)));
-			info2 += (temp_ratio) * (this->CalculateInfo(iter->second));
-		}
-	}
-	this->set_split_info_(attribute, split_info);
-	return info1 - info2;
-}
+
 
 bool C4_5AttributeSelectionMethod::HandleDiscreteAttribute(int attribute) {
-	map<int, vector<int> > mapper =
-			this->get_training_set_()->SplitByDiscreteAttribute(
-					this->get_training_set_index_(), attribute);
-
+	map<int, vector<int> > mapper = this->get_training_set_()->SplitByDiscreteAttribute(this->get_training_set_index_(), attribute);
 	int count = 0;
 	map<int, vector<int> >::iterator iter;
 	for (iter = mapper.begin(); iter != mapper.end(); ++iter) {
-		if (iter->second.size()
-				>= C4_5AttributeSelectionMethod::get_training_set_minimum_()) {
+		if (iter->second.size() >= C4_5AttributeSelectionMethod::get_training_set_minimum_()) {
 			count++;
 		}
 	}
@@ -120,151 +87,31 @@ bool C4_5AttributeSelectionMethod::HandleDiscreteAttribute(int attribute) {
 		return false;
 	}
 
-	double info1 = CalculateInfo(this->get_training_set_index_());
-
 	double info2 = 0;
-	int training_set_num = this->get_training_set_index_().size();
-	this->splited_training_set_.insert(
-			map<int, map<int, vector<int> > >::value_type(attribute, mapper));
+	this->splited_training_set_.insert(map<int, map<int, vector<int> > >::value_type(attribute, mapper));
 	double temp_ratio;
 	double split_info = 0;
-	for (map<int, vector<int> >::iterator iter = mapper.begin();
-			iter != mapper.end(); ++iter) {
+	for (map<int, vector<int> >::iterator iter = mapper.begin();iter != mapper.end(); ++iter) {
 		int vector_size = iter->second.size();
 		if (vector_size != 0) {
-			temp_ratio = (double) vector_size / (double) training_set_num;
+			temp_ratio = (double) vector_size / (double) this->case_num_;
 			split_info += (-(temp_ratio) * (log(temp_ratio) / log(2.0)));
 			info2 += (temp_ratio) * (this->CalculateInfo(iter->second));
 		}
 	}
-	double info_gain = info1 - info2;
+
+	double info_gain = this->info1_ - info2;
 	this->set_info_gain_(attribute, info_gain);
 	this->set_split_info_(attribute, split_info);
 	return true;
 }
 
-//bool C4_5AttributeSelectionMethod::HandleContinuousAttribute(int attribute) {
-//
-//	//vector<int> ordered_training_set_index = this->get_training_set_index_();
-//	vector<int> ordered_training_set_index = this->training_set_index_;
-//	int training_set_num = ordered_training_set_index.size();
-//	TrainingSet* training_set = this->get_training_set_();
-//	if (this->case_num_ < 4) {
-//		return false;
-//	}
-//
-//
-//	vector<int>::iterator it;
-//	IndexValue temp;
-//	int class_attribute = training_set->GetClassifyAttribute();
-//	AttributeValue** value_matrix = training_set->GetValueMatrixP();
-//
-//	vector<IndexValue> index_value_sort;
-//	for (it = ordered_training_set_index.begin(); it != ordered_training_set_index.end(); ++it) {
-//		temp.index_ = *it;
-//		temp.value_ = value_matrix[attribute][*it].continuous_value_;
-//		index_value_sort.push_back(temp);
-//	}
-//
-//	this->SortTrainingSetByContinuousAttribute(index_value_sort);
-//
-//	ordered_training_set_index.clear();
-//
-//	vector<IndexValue>::iterator index_value_iter;
-//	vector<IndexClass> index_class;
-//	IndexClass temp_index_class;
-//	for (index_value_iter = index_value_sort.begin(); index_value_iter != index_value_sort.end(); ++index_value_iter) {
-//		ordered_training_set_index.push_back((*index_value_iter).index_);
-//		temp_index_class.index_ = (*index_value_iter).index_;
-//		temp_index_class.class_ = value_matrix[class_attribute][(*index_value_iter).index_].discrete_value_;
-//		index_class.push_back(temp_index_class);
-//	}
-//
-//	vector<int> mapper_class_num_right = training_set->GetClassesNum(ordered_training_set_index);
-//	double info1 = this->CalculateInfo(ordered_training_set_index);
-//	double info_test = this->CalculateInfoByClassNum(mapper_class_num_right,
-//			this->case_num_);
-//	vector<int> mapper_class_num_left;
-//	int i;
-//	for (i = 0; i < training_set->GetAttributeValueNum(class_attribute); ++i) {
-//		mapper_class_num_left.push_back(0);
-//	}
-//	int training_set_minimum =
-//			C4_5AttributeSelectionMethod::get_training_set_minimum_();
-//	double current_value;
-//	double next_value;
-//	double info2;
-//	bool info2_is_set = false;
-//	double split_info;
-//	int pos;
-//	int class_num = training_set->GetAttributeValueNum(class_attribute);
-//
-//	int min_split = (training_set_num * 0.1) / class_num;
-//	if (min_split > 25) {
-//		min_split = 25;
-//	} else if (min_split
-//			< C4_5AttributeSelectionMethod::get_training_set_minimum_()) {
-//		min_split = C4_5AttributeSelectionMethod::get_training_set_minimum_();
-//
-//	}
-//	for (i = 0; i < training_set_num - min_split + 1; ++i) {
-//		int class_index = index_class.at(i).class_;
-//		if (i < min_split) {
-//			;
-//		} else {
-//			next_value = index_value_sort.at(i).value_;
-//			if (current_value != next_value) {
-//				double new_info2 = ((double) i / (double) training_set_num) * this->CalculateInfoByClassNum(mapper_class_num_left,i) + ((double) (training_set_num - i) / (double) training_set_num) * this->CalculateInfoByClassNum(mapper_class_num_right,training_set_num - i);
-//				if (info2_is_set) {
-//					if (new_info2 < info2) {
-//						info2 = new_info2;
-//						pos = i - 1;
-//					}
-//				} else {
-//					info2 = new_info2;
-//					info2_is_set = true;
-//					pos = i - 1;
-//				}
-//
-//			}
-//		}
-//		current_value = index_value_sort.at(i).value_;
-//		mapper_class_num_left.at(class_index) ++;
-//		mapper_class_num_right.at(class_index) --;
-//
-//		}
-//
-//if(	info2_is_set) {
-//		double info_gain = info1 - info2;
-//		this->set_info_gain_(attribute, info_gain);
-//		double split_value = (index_value_sort.at(pos).value_
-//		+ index_value_sort.at(pos + 1).value_) / 2;
-//		this->set_split_value_(attribute, split_value);
-//
-//		double ratio1 = (double) (pos + 1) / (double) (training_set_num);
-//		double ratio2 = (double) (training_set_num - pos - 1)
-//		/ (double) (training_set_num);
-//		double split_info = (-ratio1) * (log(ratio1) / log(2.0))
-//		+ (-ratio2) * (log(ratio2) / log(2.0));
-//
-//		this->set_split_info_(attribute, split_info);
-//		map<int, vector<int> > mapper = training_set->SplitByPositon(
-//		ordered_training_set_index, pos);
-//		this->set_splited_training_set(attribute, mapper);
-//
-//		return true;
-//
-//	} else {
-//		return false;
-//	}
-//}
+
 
 bool C4_5AttributeSelectionMethod::HandleContinuousAttribute(int attribute) {
 
-	//vector<int> ordered_training_set_index = this->get_training_set_index_();
 	C4_5AttributeSelectionMethod::current_attribute_ = attribute;
 	vector<int> ordered_training_set_index = this->training_set_index_;
-	int training_set_num = ordered_training_set_index.size();
 	TrainingSet* training_set = this->get_training_set_();
 	if (this->case_num_ < 4) {
 		return false;
@@ -276,7 +123,7 @@ bool C4_5AttributeSelectionMethod::HandleContinuousAttribute(int attribute) {
 	this->SortTrainingSet(ordered_training_set_index);
 
 	vector<int> mapper_class_num_right = training_set->GetClassesNum(ordered_training_set_index);
-	double info1 = this->CalculateInfo(ordered_training_set_index);
+
 	vector<int> mapper_class_num_left;
 	int i;
 	for (i = 0; i < training_set->GetAttributeValueNum(class_attribute); ++i) {
@@ -289,14 +136,14 @@ bool C4_5AttributeSelectionMethod::HandleContinuousAttribute(int attribute) {
 	int pos;
 	int class_num = training_set->GetAttributeValueNum(class_attribute);
 
-	int min_split = (training_set_num * 0.1) / class_num;
+	int min_split = (this->case_num_ * 0.1) / class_num;
 	if (min_split > 25) {
 		min_split = 25;
 	} else if (min_split < C4_5AttributeSelectionMethod::get_training_set_minimum_()) {
 		min_split = C4_5AttributeSelectionMethod::get_training_set_minimum_();
 
 	}
-	for (i = 0; i < training_set_num - min_split + 1; ++i) {
+	for (i = 0; i < this->case_num_ - min_split + 1; ++i) {
 		int class_index = value_matrix[class_attribute][ordered_training_set_index.at(i)].discrete_value_;
 		if (i < min_split) {
 			;
@@ -304,7 +151,7 @@ bool C4_5AttributeSelectionMethod::HandleContinuousAttribute(int attribute) {
 //			next_value = index_value_sort.at(i).value_;
 			next_value = value_matrix[attribute][ordered_training_set_index.at(i)].continuous_value_;
 			if (current_value != next_value) {
-				double new_info2 = ((double) i / (double) training_set_num) * this->CalculateInfoByClassNum(mapper_class_num_left,i) + ((double) (training_set_num - i) / (double) training_set_num) * this->CalculateInfoByClassNum(mapper_class_num_right,training_set_num - i);
+				double new_info2 = ((double) i / (double) this->case_num_) * this->CalculateInfoByClassNum(mapper_class_num_left,i) + ((double) (this->case_num_ - i) / (double) this->case_num_) * this->CalculateInfoByClassNum(mapper_class_num_right,this->case_num_ - i);
 				if (info2_is_set) {
 					if (new_info2 < info2) {
 						info2 = new_info2;
@@ -324,22 +171,21 @@ bool C4_5AttributeSelectionMethod::HandleContinuousAttribute(int attribute) {
 
 		}
 
-if(	info2_is_set) {
-		double info_gain = info1 - info2;
+    if(info2_is_set) {
+		double info_gain = this->info1_ - info2;
 		this->set_info_gain_(attribute, info_gain);
 		double split_value = (value_matrix[attribute][ordered_training_set_index.at(pos)].continuous_value_ + value_matrix[attribute][ordered_training_set_index.at(pos + 1)].continuous_value_) / 2;
 
 		this->set_split_value_(attribute, split_value);
 
-		double ratio1 = (double) (pos + 1) / (double) (training_set_num);
-		double ratio2 = (double) (training_set_num - pos - 1) / (double) (training_set_num);
-		double split_info = (-ratio1) * (log(ratio1) / log(2.0))
-		+ (-ratio2) * (log(ratio2) / log(2.0));
+		double ratio1 = (double) (pos + 1) / (double) (this->case_num_);
+		double ratio2 = (double) (this->case_num_ - pos - 1) / (double) (this->case_num_);
+		double split_info = (-ratio1) * (log(ratio1) / log(2.0)) + (-ratio2) * (log(ratio2) / log(2.0));
 
 		this->set_split_info_(attribute, split_info);
-		map<int, vector<int> > mapper = training_set->SplitByPositon(
-		ordered_training_set_index, pos);
-		this->set_splited_training_set(attribute, mapper);
+
+		map<int, vector<int> > mapper = training_set->SplitByPositon(ordered_training_set_index, pos);
+        this->set_splited_training_set(attribute, mapper);
 
 		return true;
 
@@ -375,8 +221,7 @@ void C4_5AttributeSelectionMethod::SortTrainingSetByContinuousAttribute(
 
 }
 
-double C4_5AttributeSelectionMethod::CalculateInfoByClassNum(
-		vector<int>& class_num, int all_num) {
+double C4_5AttributeSelectionMethod::CalculateInfoByClassNum(vector<int>& class_num, int all_num) {
 	double info = 0;
 	vector<int>::iterator iter;
 	for (iter = class_num.begin(); iter != class_num.end(); ++iter) {
@@ -424,16 +269,7 @@ void C4_5AttributeSelectionMethod::TestGetRandomSubSpace() {
 	}
 }
 
-void C4_5AttributeSelectionMethod::ExecuteSelection() {
-	/*
-	 * use the random subspace of all features
-	 */
-	//vector<int> attribute_list = this->GetRandomSubSpace(this->get_attribute_list_());
-
-	/*
-	 * use the all features
-	 */
-
+void C4_5AttributeSelectionMethod::ExecuteSelectionByIGR() {
 	vector<int> attribute_list = this->get_attribute_list_();
 
 	TrainingSet* training_set = this->get_training_set_();
@@ -542,17 +378,17 @@ void C4_5AttributeSelectionMethod::ExecuteSelection() {
  */
 
 
-void C4_5AttributeSelectionMethod::ExecuteSelectionByIGR() {
+void C4_5AttributeSelectionMethod::ExecuteSelection() {
 	/*
 	 * use the random subspace of all features
 	 */
 
-	//vector<int> attribute_list = this->GetRandomSubSpace(this->get_attribute_list_());
+	vector<int> attribute_list = this->GetRandomSubSpace(this->get_attribute_list_());
 
 	/*
 	 * use the all features
 	 */
-	vector<int> attribute_list = this->get_attribute_list_();
+	//vector<int> attribute_list = this->get_attribute_list_();
 
 	TrainingSet* training_set = this->get_training_set_();
 	vector<int>::iterator iter;

@@ -31,8 +31,8 @@ enum StatusCode {SUCCESS,FAIL};
 enum ItemType{DISCRETE,CONTINUOUS};
 typedef ItemType AttributeType;
 
-enum NodeType{INTERNALNODE,LEAFNODE,UNKNOWN};
-
+//enum NodeType{INTERNALNODE,LEAFNODE,UNKNOWN};
+enum NodeType{LEAFNODE,INTERNALNODE,UNKNOWN};
 
 typedef struct item_struct{
 	union item_value{

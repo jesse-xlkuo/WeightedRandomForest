@@ -32,14 +32,14 @@ public:
 	vector<int> GetNormalAttributes();
 	int GetAttributeValueNum(int);
 	map<int,double> GetClassDistribution(vector<int>);
-	int GetTheMostClass(vector<int>);
-	bool IsTrainingSetSameClass(vector<int>);
+	int GetTheMostClass(vector<int>&);
+	bool IsTrainingSetSameClass(vector<int>&);
 	map<int,vector<int> > SplitByDiscreteAttribute(vector<int>,int);
-	map<int,vector<int> > SplitByPositon(vector<int>,int);
+	map<int,vector<int> > SplitByPositon(vector<int>&,int);
 	void DeleteOneAttribute(vector<int>&,int);
 	string GetAttributeName(int attribute);
 	string GetAttributeValueName(int attribute,int index);
-	vector<int> GetClassesNum(vector<int> training_set_index);
+	vector<int> GetClassesNum(vector<int>& training_set_index);
 	AttributeValue** GetValueMatrixP();
 
 	/*
