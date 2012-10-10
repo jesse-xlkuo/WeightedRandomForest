@@ -22,9 +22,10 @@ RandomForests::RandomForests(){
 
 }
 
-RandomForests::RandomForests(TrainingSet* training_set,int trees_num){
+RandomForests::RandomForests(TrainingSet* training_set,int trees_num, int subspace){
 	this->training_set_=training_set;
 	this->trees_num_=trees_num;
+	this->subspace_ = subspace;
 }
 
 vector<DecisionTree*> RandomForests::get_trees(){
@@ -33,6 +34,7 @@ vector<DecisionTree*> RandomForests::get_trees(){
 
 void RandomForests::GenerateRF(){
 	vector<vector<int> > training_sets=this->GetRandomTrainingSet();
+	C4_5AttributeSelectionMethod::subspace_ = this->subspace_;
 	double i = 0;
 	vector<vector<int> >::iterator iter;
 	for(iter=training_sets.begin();iter!=training_sets.end();++iter){
@@ -48,6 +50,7 @@ void RandomForests::GenerateRF(){
 	}
 
 }
+
 
 //void RandomForests::PrintTrees(){
 //	vector<DecisionTree*>::iterator iter;

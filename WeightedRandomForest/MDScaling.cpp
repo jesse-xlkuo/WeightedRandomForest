@@ -1,9 +1,12 @@
 #include "MDScaling.h"
-#include <math.h>
+#include <cmath>
 #include <algorithm>
 #include<iostream>
 
-double *getOutMatrix(double *B, int n, double eps, int jt)
+#include<fstream>
+#include <boost/numeric/mtl/mtl.hpp>
+
+double *getOutMatrix(double *source, int n, double eps, int jt)
 {
 	/*MultiDimensional Scaling
 	Input:
@@ -15,6 +18,10 @@ double *getOutMatrix(double *B, int n, double eps, int jt)
 	   xy ˫���ȶ�ά���飬����Ϊ2xn����һ�б�ʾx��꣬�ڶ��б�ʾy���
 	   
     */
+
+	double* B = (double*)malloc(n*n*sizeof(double));
+	void ConvertToDMatrix(double* a, int n, double* b);
+	ConvertToDMatrix(source, n, B);
 	
 	double *B2, *BB;
 	B2 = (double *)malloc(n*n*sizeof(double));
@@ -22,7 +29,7 @@ double *getOutMatrix(double *B, int n, double eps, int jt)
 	//step1: get B2 = B.*B
 	innerproduct(B, n, B2);
 	
-	//step2: get BB(j,k) = -0.5*B(j,k)^2+0.5*sum(B2(1:n,k))/n+0.5*sum(B2(j,1:n))/n-0.5*sum(sum(B2(1:n,1:n)))/n^2;
+	//stepPrintDate2: get BB(j,k) = -0.5*B(j,k)^2+0.5*sum(B2(1:n,k))/n+0.5*sum(B2(j,1:n))/n-0.5*sum(sum(B2(1:n,1:n)))/n^2;
 	double *sum1, *sum2;
 	double sum3;
 	sum1 = (double *)malloc(n*sizeof(double));//sum(B2(1:n,k))
@@ -40,47 +47,68 @@ double *getOutMatrix(double *B, int n, double eps, int jt)
 		}
 	}
 	//BB(j,k)
-	std::cout << "BB begin\n";
 	for(int j = 0; j < n; j++)
 	{
 		for(int k = 0; k < n; k++)
 		{
 			BB[j*n+k] = -0.5*B[j*n+k]*B[j*n+k] + 0.5*sum1[k]/n + 0.5*sum2[j]/n - 0.5*sum3/(n*n); 
-			std::cout << BB[j*n+k] << " ";
 		}
-		std::cout << "\n";
 	}
-	std::cout << "BB end\n";
+
 
 	//Step3: [V,D] = eig(BB)
 	int result = cjcbi(BB, n, B, eps,jt); //D = BB, V = B
-	//if(result < 0) return null;//error
+	if(result < 0) return NULL;//error
 
 	//step4: DD=sqrtm(D)
+	double s1 = -1.0, s2 = -1.0;
+	int s1_index = -1, s2_index = -1;
 	for(int i = 0; i < n; i++)
 		for(int j = 0; j < n; j++)
 		{
-			if(i==j)
-				if(BB[i*n+j] > 0){
-					B2[i*n+j] = sqrt(BB[i*n+j]);
-				}else{
-					B2[i*n+j] = sqrt(abs(BB[i*n+j]));
-				}
 
-			else
-				B2[i*n+j] = 0.0;	
+			if(i == j && BB[i*n+j] >= 0){
+				if(s1 < 0 && s2 < 0){
+					s1 = BB[i*n+j];
+					s1_index = i;
+				}else if(s2 < 0){
+					if(BB[i*n+j] > s1){
+						s2 = s1;
+						s2_index = s1_index;
+						s1 = BB[i*n+j];
+						s1_index = i;
+					}else{
+						s2 = BB[i*n+j];
+						s2_index = i;
+					}
+				}else{
+					if(BB[i*n+j] > s1){
+						s2 = s1;
+						s2_index = s1_index;
+						s1 = BB[i*n+j];
+						s1_index = i;
+					}else{
+						if(BB[i*n+j] > s2){
+							s2 = BB[i*n+j];
+							s2_index = i;
+						}
+
+					}
+				}
+			}
 		}
 
-	//Step5: OutMatrix = BB = V*DD
-	brmul(B, B2,  n, n,  n, BB);
-	
-	//Step6: XX = BB(1:n,1)		YY = BB(1:n,2);
+	double x1 = std::pow(s1,0.5);
+	double x2 = std::pow(s2,0.5);
 	double *xy;
 	xy = (double *)malloc(2*n*sizeof(double));
+	//std::cout << "max " << s1 << ":" << s2 << std::endl;
+
 	for(int i = 0; i < n; i++)
 	   {
-		xy[i*2+0] = BB[i*n+0];
-		xy[i*2+1] = BB[i*n+1];
+		xy[i*2+0] = B[i*n + s1_index] * x1;
+		xy[i*2+1] = B[i*n + s2_index] * x2;
+
 	   }
 	//Step7: free
 	free(B);
@@ -182,3 +210,26 @@ int cjcbi(double *a, int n, double *v, double eps,int jt)
 	}
 	return(1);
 }
+
+void ConvertToDMatrix(double* a, int n, double* b){
+
+	int i, j;
+	for(i = 0; i < n; ++ i){
+		for(j = 0; j < n; ++ j){
+			b[i*n + j] = a[i*n + i] + a[j*n + j] - 2*a[i*n + j];
+		}
+
+	}
+}
+
+void PrintDate(double* a, int n){
+	//std::ofstream o("source");
+	int i, j;
+	for(i = 0; i < n; ++ i){
+		for(j = 0; j < n; ++ j){
+			//o << a[i*n +j] << "\t";
+		}
+		//o << std::endl;
+}
+}
+

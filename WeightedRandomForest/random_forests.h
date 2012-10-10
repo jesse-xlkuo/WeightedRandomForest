@@ -37,6 +37,7 @@ private:
 	static int seed_num_;
 	TrainingSet* training_set_;
 	int trees_num_;
+	int subspace_;
 
 	vector<DecisionTree*> random_forests_;
 	vector<int> node_num_;  // the node num of the tree
@@ -82,7 +83,7 @@ public:
 		RandomForests::seed_num_++;
 	}
 	RandomForests();
-	RandomForests(TrainingSet* training_set,int tree_num);
+	RandomForests(TrainingSet* training_set,int tree_num, int subspace);
 	vector<DecisionTree*> get_trees();
 	void GenerateRF();
 	int PredictClass(TrainingSet* training_set,int tuple);
@@ -108,10 +109,6 @@ public:
 	void set_c_s2_(double c_s2);
 	double get_c_s2_();
 	void PredictClassToFile(TrainingSet* training_set, AttributeValueMapper* attribute_value_mapper, string file_name);
-
-
-
-
 
 };
 

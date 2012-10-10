@@ -96,6 +96,7 @@ Node* DecisionTree::GenerateDecisionTreeByC4_5(vector<int> training_set_index,ve
 	}
 }
 
+
 //int DecisionTree::GetParentTheMostClass(TrainingSet* training_set, Node* parent, vector<ChildInfo> child_info_vec){
 //	vector<ChildInfo>::iterator child_info_iter;
 //	vector<int> all_training_set;
@@ -322,17 +323,17 @@ double DecisionTree::GetErrorRate(TrainingSet* training_set,vector<int> training
 }
 
 
-vector<int> DecisionTree::GetRandomSubSpace(vector<int> attribute_list) {
+vector<int> DecisionTree::GetRandomSubSpace(vector<int> attribute_list, int size) {
 	// the result attribute list can't be repeatable
 	int seed_num = C4_5AttributeSelectionMethod::get_seed_();
 	vector<int> result;
 	int attribute_num = attribute_list.size();
-	int result_size = log((double) attribute_num) / log(2.0) + 1;
+	//int size = log((double) attribute_num) / log(2.0) + 1;
 	int j = 0;
 	int random_num;
 	vector<int>::iterator it = attribute_list.begin();
 
-	for (j = 0; j < result_size; ++j) {
+	for (j = 0; j < size; ++j) {
 		srand(unsigned(time(NULL)) + seed_num);
 		random_num = rand() % attribute_num;
 		result.push_back(attribute_list.at(random_num));

@@ -39,7 +39,6 @@ private:
 	TrainingSet* training_set_;
 	AttributeValue** value_matrix_;
 	int target_attribute_;
-
 	/*
 	 * following code is for serialization
 	 */
@@ -68,7 +67,7 @@ public:
 	Node* PredictClass(TrainingSet* training_set,int index,Node* root);
 	double GetErrorRate(TrainingSet* training_set,vector<int> training_set_index);
 	const static int max_depth_ = 1000;
-	vector<int> GetRandomSubSpace(vector<int> attribute_list);
+	vector<int> GetRandomSubSpace(vector<int> attribute_list, int size);
 
 	//int GetParentTheMostClass(TrainingSet* training_set, Node* parent, vector<ChildInfo> child_info_vec);
 };

@@ -140,7 +140,11 @@ vector<point> RFDeployment::CalculateRelativePos(){
 		}
 	}
 	double* pos;
-	pos = getOutMatrix(cor, trees_num, 0.00000001, 100);
+	pos = getOutMatrix(cor, trees_num, 0.000000001, 100000000000);
+	if(pos == NULL){
+		cout << "getOutMatrixFunction() return NULL" << endl;
+
+	}
 	int x;
 	for(x = 0; x < trees_num; x++){
 		point p;
@@ -211,7 +215,7 @@ void RFDeployment::CalculateOOBPredictorResult(TrainingSet* training_set){
 }
 
 /*
- * the denominator is the oob training set, not all the training set
+ * the denominator is the oob training set, not all the traiOOB_numning set
  * before you use this function result,you should run CalculateOOBPredictor() first;
  */
 
@@ -367,7 +371,9 @@ void RFDeployment::CalculateCorBetweenEachTwoTree(TrainingSet* training_set){
 	for(a = 0; a < trees_num; a ++){
 		for(b = 0; b < trees_num; b ++){
 			if(a != b){
-				   cor_vec.at(a).at(b) = this->CalculateTwoTreesCorrelation(a,b,training_set);
+				cor_vec.at(a).at(b) = this->CalculateTwoTreesCorrelation(a,b,training_set);
+			}else{
+				cor_vec.at(a).at(b) = 1.0;
 			}
 		}
 	}

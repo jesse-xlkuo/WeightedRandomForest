@@ -8,6 +8,7 @@
 #include "c4_5_attribute_selection_method.h"
 
 int C4_5AttributeSelectionMethod::current_attribute_ = -1;
+int C4_5AttributeSelectionMethod::subspace_ = -1;
 
 C4_5AttributeSelectionMethod::C4_5AttributeSelectionMethod(
 		TrainingSet* training_set, vector<int> training_set_index,
@@ -235,18 +236,26 @@ double C4_5AttributeSelectionMethod::CalculateInfoByClassNum(vector<int>& class_
 
 
 
-vector<int> C4_5AttributeSelectionMethod::GetRandomSubSpace(
-		vector<int> attribute_list) {
+vector<int> C4_5AttributeSelectionMethod::GetRandomSubSpace(vector<int> attribute_list) {
 	// the result attribute list can't be repeatable
 	int seed_num = C4_5AttributeSelectionMethod::get_seed_();
 	vector<int> result;
 	int attribute_num = attribute_list.size();
-	int result_size = log((double) attribute_num) / log(2.0) + 1;
+	//int result_size = log((double) attribute_num) / log(2.0) + 1;
 	int j = 0;
 	int random_num;
 	vector<int>::iterator it = attribute_list.begin();
 
-	for (j = 0; j < result_size; ++j) {
+	/*
+	 * if subspace size more than all attributes number
+	 * subspace equals to the number of attributes
+	 */
+	int subspace = C4_5AttributeSelectionMethod::subspace_;
+	if(subspace > attribute_list.size()){
+		subspace = attribute_list.size();
+	}
+
+	for (j = 0; j < subspace; ++j) {
 		srand(unsigned(time(NULL)) + seed_num);
 		random_num = rand() % attribute_num;
 		result.push_back(attribute_list.at(random_num));

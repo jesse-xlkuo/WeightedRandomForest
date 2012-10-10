@@ -29,7 +29,9 @@ private:
 	map<int,double> split_value_;
 	double info1_;
 
+
 public:
+	static int subspace_; //subspace size when construct a tree at one node
 
 	C4_5AttributeSelectionMethod(TrainingSet*,vector<int>,vector<int>);
 	void set_status_(bool status);
