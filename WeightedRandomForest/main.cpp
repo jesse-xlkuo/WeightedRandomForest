@@ -135,31 +135,46 @@ int main(int argc,char* argv[]){
 
 
         RFDeployment RF_deployment(random_forests);
-//		RF_deployment.CalculateOOBPredictor(training_set);
-//
-//		RF_deployment.CalculateOOBPredictorResult(training_set);
-//		RF_deployment.CalculateOOBConfusionMatrix(training_set);
-//		RF_deployment.CalculateOOBErrorRate(training_set);
-//		random_forests->set_OOB_error_rate_(RF_deployment.get_OOB_error_rate_());
-//		RF_deployment.CalculateRFStrength(training_set);
-//		RF_deployment.CalculateRFCorrelation(training_set);
-//		double s = RF_deployment.get_RF_strength_();
-//		random_forests->set_strength_(s);
-//		double c = RF_deployment.get_RF_correlation();
-//		random_forests->set_correlation_(c);
-//		random_forests->set_c_s2_(c / (s * s));
-//		if(save_model){
-//			random_forests->save_random_forests(*random_forests, model_name.c_str());
-//		}
+		RF_deployment.CalculateOOBPredictor(training_set);
 
-//		cout << "out bag of error rate is "
-//				<< random_forests->get_OOB_error_rate_() << endl;
-//		cout << "random forests strength is" << random_forests->get_strength()
-//				<< endl;
-//		cout << "random forests correlat forests.....ion is "
-//				<< random_forests->get_correlation_() << endl;
-//		cout << "random forests c/s2 is " << random_forests->get_c_s2_()
-//				<< endl;
+		RF_deployment.CalculateOOBPredictorResult(training_set);
+		RF_deployment.CalculateOOBConfusionMatrix(training_set);
+		RF_deployment.CalculateOOBErrorRate(training_set);
+		random_forests->set_OOB_error_rate_(RF_deployment.get_OOB_error_rate_());
+		RF_deployment.CalculateRFStrength(training_set);
+		RF_deployment.CalculateRFCorrelation(training_set);
+		double s = RF_deployment.get_RF_strength_();
+		random_forests->set_strength_(s);
+		double c = RF_deployment.get_RF_correlation();
+		random_forests->set_correlation_(c);
+		random_forests->set_c_s2_(c / (s * s));
+		if(save_model){
+			random_forests->save_random_forests(*random_forests, model_name.c_str());
+		}
+
+		cout << "out bag of error rate is "
+				<< random_forests->get_OOB_error_rate_() << endl;
+		cout << "random forests strength is" << random_forests->get_strength()
+				<< endl;
+		cout << "random forests correlat forests.....ion is "
+				<< random_forests->get_correlation_() << endl;
+		cout << "random forests c/s2 is " << random_forests->get_c_s2_()
+				<< endl;
+
+		/*
+		 * print similarity for each pair of trees to test
+		 */
+		RF_deployment.CalculateTreesSimilarity(training_set);
+		vector<double> similarity = RF_deployment.GetSimilarity();
+		vector<double>::iterator iter;
+		int n = 0;
+		for(iter = similarity.begin(); iter != similarity.end(); ++ iter){
+			cout << *iter << " ";
+			n ++;
+			if (n % 10 == 0){
+				cout << "\n";
+			}
+		}
 
 
 		if (model_test) {

@@ -4,7 +4,7 @@
 #include<iostream>
 
 #include<fstream>
-#include <boost/numeric/mtl/mtl.hpp>
+
 
 double *getOutMatrix(double *source, int n, double eps, int jt)
 {

@@ -48,6 +48,8 @@ private:
 	double RF_correlation_;
 	vector<double> trees_strength_;
 
+	vector<double> similarity_trees;// it store a matrix which contain similarity between trees
+
 
 
 
@@ -83,6 +85,13 @@ public:
 	 * for VisForests
 	 */
 	vector<point> CalculateRelativePos();
+
+	/* author:qinghan meng
+	 * data:7/23/2013
+	 * we get similarity betwween trees by the result of classifying
+	 */
+	void CalculateTreesSimilarity(TrainingSet* training_set);
+	vector<double> GetSimilarity();
 
 };
 

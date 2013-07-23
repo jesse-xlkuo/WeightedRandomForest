@@ -555,6 +555,42 @@ double RFDeployment::get_RF_correlation(){
 	return this->RF_correlation_;
 }
 
+void RFDeployment::CalculateTreesSimilarity(TrainingSet* training_set){
+	int tree_num = this->RF_->get_trees_num();
+	vector<DecisionTree*>::iterator iter;
+	int training_set_size = training_set->get_training_set_num_();
+	vector<vector<int> > pr_matrix(tree_num); // store predicted result for each tree.
 
+	int n = 0;
+	for (iter = this->random_forests_.begin();iter != this->random_forests_.end(); ++iter) {
+		for(int i = 0; i < training_set_size; ++ i){
+			int target_class = ((*iter)->PredictClass(training_set, i, (*iter)->get_root_()))->get_class_();
+			pr_matrix.at(n).push_back(target_class);
+		}
+		n ++;
+	}
+
+	/*
+	 * calculate similarity for each pair of trees.
+	 */
+
+	int i,j;
+	for(i = 0; i < tree_num - 1; i ++){
+		for(j = i + 1; j < tree_num; j ++){
+			int same_num = 0;
+			for (int n = 0; n < training_set_size; n++) {
+				if (pr_matrix.at(i).at(n) == pr_matrix.at(j).at(n)) {
+					same_num += 1;
+
+				}
+			}
+			this->similarity_trees.push_back((double) same_num / (double) training_set_size);
+		}
+	}
+}
+
+vector<double> RFDeployment::GetSimilarity(){
+	return this->similarity_trees;
+}
 
 
