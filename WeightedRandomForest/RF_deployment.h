@@ -48,7 +48,7 @@ private:
 	double RF_correlation_;
 	vector<double> trees_strength_;
 
-	vector<double> similarity_trees;// it store a matrix which contain similarity between trees
+	vector<vector<double> > similarity_trees;// it store a matrix which contain similarity between trees
 
 
 
@@ -91,7 +91,8 @@ public:
 	 * we get similarity betwween trees by the result of classifying
 	 */
 	void CalculateTreesSimilarity(TrainingSet* training_set);
-	vector<double> GetSimilarity();
+	vector<vector<double> > GetSimilarity();
+	void OutputSimilarity(const char* file);
 
 };
 

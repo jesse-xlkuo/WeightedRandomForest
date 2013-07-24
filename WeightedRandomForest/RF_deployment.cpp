@@ -573,24 +573,42 @@ void RFDeployment::CalculateTreesSimilarity(TrainingSet* training_set){
 	/*
 	 * calculate similarity for each pair of trees.
 	 */
-
+	this->similarity_trees = vector<vector<double> >(tree_num, vector<double>(tree_num));
 	int i,j;
-	for(i = 0; i < tree_num - 1; i ++){
-		for(j = i + 1; j < tree_num; j ++){
-			int same_num = 0;
-			for (int n = 0; n < training_set_size; n++) {
-				if (pr_matrix.at(i).at(n) == pr_matrix.at(j).at(n)) {
-					same_num += 1;
+	for(i = 0; i < tree_num; i ++){
+		for(j = i; j < tree_num; j ++){
+			if(i == j){
+				this->similarity_trees.at(i).at(j) = 1.0;
+			}else{
+				int same_num = 0;
+				for (int n = 0; n < training_set_size; n++) {
+					if (pr_matrix.at(i).at(n) == pr_matrix.at(j).at(n)) {
+						same_num += 1;
 
+					}
 				}
+				this->similarity_trees.at(i).at(j) = (double) same_num / (double) training_set_size;
+				this->similarity_trees.at(j).at(i) = this->similarity_trees.at(i).at(j);
 			}
-			this->similarity_trees.push_back((double) same_num / (double) training_set_size);
+
 		}
 	}
 }
 
-vector<double> RFDeployment::GetSimilarity(){
+vector<vector<double> > RFDeployment::GetSimilarity(){
 	return this->similarity_trees;
+}
+
+void RFDeployment::OutputSimilarity(const char* file){
+	ofstream o(file);
+	int trees_num = this->RF_->get_trees_num();
+	int i,j;
+	for (i = 0; i < trees_num; i ++){
+		for (j = 0; j < trees_num; j ++){
+			o << setiosflags(ios::left) << setw(10) << this->similarity_trees.at(i).at(j);
+		}
+		o << endl;
+	}
 }
 
 

@@ -143,6 +143,13 @@ int main(int argc,char* argv[]){
 		random_forests->set_OOB_error_rate_(RF_deployment.get_OOB_error_rate_());
 		RF_deployment.CalculateRFStrength(training_set);
 		RF_deployment.CalculateRFCorrelation(training_set);
+		/*
+		 * calculate correlation between each two trees  using breiman's method
+		 *
+		 */
+		RF_deployment.CalculateCorBetweenEachTwoTree(training_set);
+		vector<vector<double> > cor_vec = RF_deployment.get_cor_vec_();
+
 		double s = RF_deployment.get_RF_strength_();
 		random_forests->set_strength_(s);
 		double c = RF_deployment.get_RF_correlation();
@@ -161,20 +168,15 @@ int main(int argc,char* argv[]){
 		cout << "random forests c/s2 is " << random_forests->get_c_s2_()
 				<< endl;
 
+
+
 		/*
 		 * print similarity for each pair of trees to test
 		 */
+
 		RF_deployment.CalculateTreesSimilarity(training_set);
-		vector<double> similarity = RF_deployment.GetSimilarity();
-		vector<double>::iterator iter;
-		int n = 0;
-		for(iter = similarity.begin(); iter != similarity.end(); ++ iter){
-			cout << *iter << " ";
-			n ++;
-			if (n % 10 == 0){
-				cout << "\n";
-			}
-		}
+		vector<vector<double> > similarity = RF_deployment.GetSimilarity();
+		RF_deployment.OutputSimilarity("similarity.txt");
 
 
 		if (model_test) {
